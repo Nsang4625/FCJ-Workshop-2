@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Using Lambda as custom trigger on AWS System Manager</title>
+    <link>/5-feature_pipeline/5-2-custom_trigger/</link>
+    <description>Recent content in Using Lambda as custom trigger on AWS System Manager</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <atom:link href="/5-feature_pipeline/5-2-custom_trigger/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

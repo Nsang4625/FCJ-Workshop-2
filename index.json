@@ -1,0 +1,169 @@
+[
+{
+	"uri": "/",
+	"title": "Deploying a NodeJs Application on AWS using Terraform",
+	"tags": [],
+	"description": "",
+	"content": "Implementing CI/CD pipelines for feature branch strategy using AWS services Objective This workshop aims to provide participants with hands-on experience in setting up a robust Continuous Integration and Continuous Deployment (CI/CD) pipeline using AWS services. Attendees will learn to automate the build, test, and deployment processes for modern applications, enabling efficient and reliable delivery to production environments..\nContent Introduction Preparation Code and Dependency Main pipeline Feature pipeline Clean up resources "
+},
+{
+	"uri": "/3-code_dependency/3.1-codecommit/",
+	"title": "CodeCommit",
+	"tags": [],
+	"description": "",
+	"content": "Create CodeCommit repository On your AWS console, search and go to CodeCommit, select Create: Enter repository’s name, select Create: Set up Git credentials: Go to AWS IAM \u0026gt; Select User \u0026gt; Select your current user: Select Security credentials: In section HTTPS Git credentials for AWS CodeCommit, select Generate: Copy username and password Push existing repository: Copy repository’s url: Open VSCode’s terminal, typing following command: git remote add origin \u0026lt;repository’s url\u0026gt; git push origin main Enter credentials that we have saved. "
+},
+{
+	"uri": "/5-feature_pipeline/5-1-pipeline/",
+	"title": "Create pipeline for feature branch",
+	"tags": [],
+	"description": "",
+	"content": "This pipeline is very similar to the previous pipeline, so we will clone it and make a few changes:\nOn CodePipeline’s console, select Workshop-2-main: Select Clone pipeline: Enter information as below: Select Edit: We will remove the last two stages: "
+},
+{
+	"uri": "/1-introduce/",
+	"title": "Introduction",
+	"tags": [],
+	"description": "",
+	"content": "What are CI/CD pipelines? A CI/CD pipeline is an automated process utilized by software development teams to streamline the creation, testing and deployment of applications. \u0026ldquo;CI\u0026rdquo; represents continuous integration, where developers frequently merge code changes into a central repository, allowing early detection of issues. \u0026ldquo;CD\u0026rdquo; refers to continuous deployment or continuous delivery, which automates the application\u0026rsquo;s release to its intended environment, ensuring that it is readily available to users. This pipeline is vital for teams aiming to improve software quality and speed up delivery through regular, reliable updates.\nIntegrating a CI/CD pipeline into your workflow significantly reduces the risk of errors in the deployment process. Automating builds and tests ensures that bugs are caught early and fixed promptly, maintaining high-quality software.\nWhy is CI/CD important? In today\u0026rsquo;s fast-paced technological landscape, Continuous Integration and Continuous Delivery (CI/CD) are more than just industry buzzwords—they represent a crucial foundation for a modern software development process.\nCI/CD is crucial because it automates the software development process, from coding through deployment. This automation means teams can release new features and fixes faster and more frequently, enhancing the product\u0026rsquo;s responsiveness to user needs. By continuously integrating and deploying, errors are detected sooner, reducing downtime and improving software quality.\nCI/CD also allows for quicker feedback loops with stakeholders, ensuring that the final product aligns closely with user expectations. Overall, it\u0026rsquo;s a foundational practice for any team aiming for high-speed, high-quality software development.\nBranch workflow Feature branch workflow is one of the alternatives to a trunk-based workflow. This means that the repository consists of the main branch—the trunk—and from the main branch separate feature branches are spawned. The main branch is a permanent branch, while the feature branches are short-lived branches in which a business feature is developed. Feature-based branching models are not considered continuous delivery unless the features are really small.\nArchitecture overview This is the overview architecture diagram: "
+},
+{
+	"uri": "/2-prerequiste/2.1-rds/",
+	"title": "RDS",
+	"tags": [],
+	"description": "",
+	"content": "Create two RDS databases We will create two databases, one for Testing environment and another for Production environment.\nTesting database Go to AWS RDS, select Create database: Select as below: For other settings, we leave them as default. Select Create Production database We do similarly to testing database.\n"
+},
+{
+	"uri": "/4-main_pipeline/4.1-unittest_build/",
+	"title": "Unit tests and build image",
+	"tags": [],
+	"description": "",
+	"content": "Firstly, go to CodePipeline console: Code Pipeline\nSelect Create pipeline: Step 1: Choose pipeline settings: Type pipeline name and choose pipeline type as Queued Select New service role and allow it to create: Select Next: Step 2: Add source stage: Choose CodeCommit: Select as follow and click Next: Step 3: Add build stage: Choose CodeBuild: Select Create project: This will pop-up a new window, where we could create a CodeBuild project: Select as below: Then we select the role that we had created: Let other options as default, select Continue to CodePipeline: Select Next: Step 4: Add deploy stage We will add it later, for now just select Skip deploy stage: "
+},
+{
+	"uri": "/2-prerequiste/2.2-ssm/",
+	"title": "AWS System Manager",
+	"tags": [],
+	"description": "",
+	"content": "Create configuration with AWS System Manager We will create configuration information here, including database’s host and database’s name(in two environment) For test database: First, go to test database that we have created: Scroll down, copy endpoint: Navigate back to System manager at: AWS SSM, then select Create parameter: Here we will create a parameter that stores testing database’s endpoint: Select Create parameter -\u0026gt; create a parameter that stores database’s name: For prod database: execute similarly to test database.\n"
+},
+{
+	"uri": "/3-code_dependency/3.2-codeartifact/",
+	"title": "CodeArtifact",
+	"tags": [],
+	"description": "",
+	"content": "Create CodeArtifact repository Go to AWS CodeArtifact: Firstly, we must create a Domain Navigate to Domain, select Create domain: Enter domain name workshop2, select Create domain: Next, we create a repository: Navigate to Repositories, select Create repository: Enter repository name, select upstream project npm-store Select Next, select the domain we have created: Select Create repository Configure environmet Configure source code to use repository from CodeArtifact rather than official npmjs:\nGo to the repository, select View connection instructions: Choose your operating system, here I’m using Linux: Copy this command: Run this command inside project: "
+},
+{
+	"uri": "/4-main_pipeline/4.2-deploy_test/",
+	"title": "Deploy test environment",
+	"tags": [],
+	"description": "",
+	"content": "On pipeline’s console, select Edit: Scroll down and select Add stage: Type in stage name and select Add stage: Select Add action group: Then select action type as CodeBuild: Select Create project: This will pop-up a new window, where we could create a CodeBuild project: Select as follow: Select Continue to CodePipeline: Click Save: "
+},
+{
+	"uri": "/2-prerequiste/",
+	"title": "Preparation ",
+	"tags": [],
+	"description": "",
+	"content": "Overview In this section, we will provision this workshop’s prerequisites, including AWS Secret Manager, System Manager Parameter Store, two ECS clusters and one ECR repository\nAWS Secret Manager AWS Secrets Manager is a service designed to simplify the process of managing sensitive information, such as database credentials, API keys, and other secrets. By securely storing and automating the rotation of secrets, AWS Secrets Manager helps ensure that applications can access essential information without embedding sensitive data directly in their code or configuration files. This enhances security by reducing the risk of unauthorized access due to leaked credentials. Secrets Manager integrates seamlessly with various AWS services, allowing for straightforward retrieval and usage of secrets in a secure manner, supporting compliance and best practices in cloud security.\nAWS Elastic Container Service (ECS) AWS Elastic Container Service (ECS) is a fully managed container orchestration service that enables the deployment, management, and scaling of Docker containers. ECS allows developers to run containerized applications with high availability and scalability on a fully managed infrastructure. With support for both EC2 instances and AWS Fargate (a serverless compute engine), ECS provides flexibility in how applications are deployed and managed\nAmazon Elastic Container Registry (ECR) Amazon Elastic Container Registry (ECR) is a fully managed container image registry that simplifies the storage, management, and deployment of container images. ECR is designed to work seamlessly with ECS, EKS (Elastic Kubernetes Service), and other container orchestration platforms, enabling secure and efficient container workflows. By providing features like image vulnerability scanning, lifecycle policies, and fine-grained access control through AWS IAM, ECR helps ensure that container images are up-to-date, secure, and managed efficiently throughout the development and deployment lifecycle\nAWS System Manager A service that was designed to cater to a wider use case then AWS Secret Manager, not just secrets or passwords, but also application configuration variables like URLs, custom settings, AMI IDs, License keys, etc\nAWS S3 Amazon Simple Storage Service (Amazon S3) is an object storage service that offers industry-leading scalability, data availability, security, and performance.\nContent RDS Systems Manager ECS Cluster ECR Repository S3 buckets "
+},
+{
+	"uri": "/5-feature_pipeline/5-2-custom_trigger/",
+	"title": "Using Lambda as custom trigger",
+	"tags": [],
+	"description": "",
+	"content": "Create Lambda function Go to Lambda console:\nSelect Create: Type value as below: Select Create: Go to Code page and paste this code:\nimport json import boto3 def lambda_handler(event, context): codepipeline = boto3.client(\u0026#39;codepipeline\u0026#39;) # Lấy tên nhánh từ sự kiện branch = event[\u0026#39;detail\u0026#39;][\u0026#39;referenceName\u0026#39;].replace(\u0026#39;refs/heads/\u0026#39;, \u0026#39;\u0026#39;) commitId = event[\u0026#39;detail\u0026#39;][\u0026#39;commitId\u0026#39;] if branch.startswith(\u0026#39;feature/\u0026#39;): response = codepipeline.start_pipeline_execution( name=\u0026#39;Workshop-2-feature\u0026#39;, sourceRevisions=[ { \u0026#39;actionName\u0026#39;: \u0026#39;Source\u0026#39;, \u0026#39;revisionType\u0026#39;: \u0026#39;COMMIT_ID\u0026#39;, \u0026#39;revisionValue\u0026#39;: commitId } ] ) return { \u0026#39;statusCode\u0026#39;: 200, \u0026#39;body\u0026#39;: json.dumps(\u0026#39;Pipeline triggered successfully!\u0026#39;) } else: # Không trigger pipeline nếu nhánh là main return { \u0026#39;statusCode\u0026#39;: 200, \u0026#39;body\u0026#39;: json.dumps(\u0026#39;Pipeline not triggered for branch: \u0026#39; + branch) } Result: Remember to grant Lambda function permission to start this pipeline\nConfigure EventBridge rule Go to EventBridge console, select Rules: Choose Create rule: Type information as below: In step 2, scroll down to Creation method: Paste the content below:\n{ \u0026#34;source\u0026#34;: [\u0026#34;aws.codecommit\u0026#34;], \u0026#34;detail-type\u0026#34;: [\u0026#34;CodeCommit Repository State Change\u0026#34;], \u0026#34;resources\u0026#34;: [\u0026#34;arn:aws:codecommit:us-east-1:687511516464:workshop-2\u0026#34;], \u0026#34;detail\u0026#34;: { \u0026#34;event\u0026#34;: [\u0026#34;referenceCreated\u0026#34;, \u0026#34;referenceUpdated\u0026#34;], \u0026#34;referenceType\u0026#34;: [\u0026#34;branch\u0026#34;], \u0026#34;referenceName\u0026#34;: [\u0026#34;main\u0026#34;] } } Select Next: Select as below: Remember to remove feature pipeline from main pipeline’s target.\n"
+},
+{
+	"uri": "/3-code_dependency/",
+	"title": "Code and Dependency",
+	"tags": [],
+	"description": "",
+	"content": "In this section, we will set up three services: CodeCommit for storing source code and CodeArtifact for storing dependencies\nAWS CodeCommit AWS CodeCommit is a fully managed source control service that hosts secure Git repositories. It enables teams to collaborate on code in a secure, scalable, and reliable environment. Unlike traditional Git hosting services, CodeCommit is deeply integrated with other AWS services, allowing seamless CI/CD workflows and secure, automatic backups within the AWS ecosystem.\nKey Features:\nSecure and Scalable: CodeCommit ensures data is encrypted at rest and in transit, supporting AWS Identity and Access Management (IAM) for fine-grained permissions. High Availability: With multi-AZ redundancy, CodeCommit provides high availability and fault tolerance. Integration: It integrates natively with other AWS services such as CodeBuild, CodePipeline, and CloudWatch, enabling automated builds, deployments, and monitoring. Support for Git Tools: Developers can use their preferred Git client and IDE plugins with CodeCommit, making it a familiar and flexible choice for version control. AWS CodeArtifact AWS CodeArtifact is a fully managed artifact repository service that makes it easy to store, publish, and share software packages used in your development process. CodeArtifact supports popular package managers and formats such as Maven, npm, and Python’s pip, helping streamline the distribution and management of packages across teams and projects.\nKey Features:\nMultiple Package Formats: CodeArtifact supports multiple package formats, including Maven, npm, PyPI, and NuGet, allowing developers to use their preferred tools. Secure and Scalable Storage: Packages are securely stored with encryption at rest, and IAM policies control access to repositories. Dependency Management: CodeArtifact simplifies dependency management by allowing you to proxy and cache public repositories, reducing latency and improving build times. Integration with CI/CD: Easily integrates with AWS CodeBuild, CodePipeline, and other CI/CD tools to automate the build and deployment processes. Content 3.1. CodeCommit 3.2. CodeArtifact\n"
+},
+{
+	"uri": "/2-prerequiste/2.3-ecs/",
+	"title": "ECS Cluster",
+	"tags": [],
+	"description": "",
+	"content": "We will create two ECS cluster, one for development/testing purpose and another for production:\nTesting cluster Click Create cluster: Configure cluster: Specify cluster’s name and choose Fargate as infrastructure: Ignore all other configuration and select Create: Prod cluster: similarly to Testing cluster "
+},
+{
+	"uri": "/4-main_pipeline/4.3-security_analyst/",
+	"title": "Security analyst with CodeGuru",
+	"tags": [],
+	"description": "",
+	"content": "Configure CodeGuru Go to CodeGuru: Select Integrated with CodePipeline: Select Open template in CloudFormation Add stage to the pipeline Navigate back to CodePipeline console, select Edit: Scroll down, choose Add stage and enter a stage name Select Add action group Enter information as follow: Select Done Scroll up and choose Save: "
+},
+{
+	"uri": "/4-main_pipeline/4.4-manual_approve/",
+	"title": "Add manual approval stage",
+	"tags": [],
+	"description": "",
+	"content": "Create SNS topic Navigate to Amazon SNS console\nSelect Create topic: Enter information as below: Click Create topic In created topic, select Create subscription: Enter information as below and finally choose Create subscription: Add manual approval stage Navigate back to CodePipeline console, select Edit: Select Add stage: Enter stage name: Select Add action group: Enter information as below: Select Done: Select Save: "
+},
+{
+	"uri": "/2-prerequiste/2.4-ecr/",
+	"title": "ECR repository",
+	"tags": [],
+	"description": "",
+	"content": "Create a ECR repository Go to AWS ECR, click Create: Choose visibility and type repository’s name: Let other settings as default, click Create: Result: "
+},
+{
+	"uri": "/4-main_pipeline/",
+	"title": "Main pipeline",
+	"tags": [],
+	"description": "",
+	"content": "In this section we will create a CI/CD pipeline that is triggered everytime a pull request is approved: Content Unit tests and build image Deploy to test environment Security analyst Add manual approval stage Deploy to production environment "
+},
+{
+	"uri": "/2-prerequiste/2.5-s3/",
+	"title": "S3 bucket",
+	"tags": [],
+	"description": "",
+	"content": "Create a S3 bucket for storing test scripts We need a S3 buckets for storing API testing files\nGo to AWS S3 dashboard, select Create bucket: Type in bucket’s name and let other settings as default: Select create bucket: Upload functional test file into S3 bucket: Select the created bucket: Select Upload: Choose the file I put in /tests/functional (in the repository I had provided) then select Upload: "
+},
+{
+	"uri": "/4-main_pipeline/4.5-deploy_prod/",
+	"title": "Deploy to Production environment",
+	"tags": [],
+	"description": "",
+	"content": "Create Load Balancer Firstly, we need to create an Application Load Balancer: Go to EC2 console:\nSelect Load Balancer: Choose Create load balancer: Choose Create: Configuration as below: Select Create target group Configuration as below: Create ECS service For the first time, we have to create a service manually\nCreate task definition: Copy file taskdef.json in Github repository, paste here and click Create: Select Create service: Enter information as below: Select Create: -\u0026gt; Doing this will automatically create a CodeDeploy project Add deploy stage to pipeline Navigate back to CodePipeline console and select our Pipeline\n"
+},
+{
+	"uri": "/5-feature_pipeline/",
+	"title": "Feature pipeline",
+	"tags": [],
+	"description": "",
+	"content": "In this section we will create a CI pipeline following the diagram below: Content Create pipeline for feature branch Using Lambda as custom trigger "
+},
+{
+	"uri": "/6-demo/",
+	"title": "Demo",
+	"tags": [],
+	"description": "",
+	"content": "Make a commit in feature branch:\nLet’s take a look at functional tests: When a new commit is made in the main branch, this is the result: Email from SNS to request manual approval: Click Approve and Submit: Pipeline execution’s status: Blue/Green deployment process: Our new application: "
+},
+{
+	"uri": "/7-cleanup/",
+	"title": "Clean up resources",
+	"tags": [],
+	"description": "",
+	"content": "Clean up resources Delete pipeline in CodePipeline Delete ECS Service Delete ECS Task Definition Delete ECS Cluster Delete ECR Repository Delete Amazon CodeCommit repository Delete CodeBuild Delete RDS Database Delete SSM Parameter Delete S3 bucket "
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]
